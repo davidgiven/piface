@@ -7,6 +7,8 @@
 
 #include "globals.h"
 
+#if defined TARGET_PI
+
 struct mmc_interface
 {
 	volatile uint32_t cmd;
@@ -52,3 +54,5 @@ void mmc_init(void)
 		}
 	}
 }
+
+#endif

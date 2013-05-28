@@ -11,7 +11,10 @@ static char buffer[256];
 
 int main(int argc, const char* argv[])
 {
-	pi_init_uart();
+	#if defined TARGET_PI
+		pi_init_uart();
+	#endif
+
 	printf("\n\nPiFace v%s (c) 2013 David Given\n", VERSION);
 
 	/* mmc_init(); */

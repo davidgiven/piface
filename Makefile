@@ -1,6 +1,6 @@
 VERSION = 0.1
 
-CC = ack -mrpi -O
+OBJDIR = .obj
 hide = @
 
 SRCS = \
@@ -10,18 +10,36 @@ SRCS = \
 
 CFLAGS = -DVERSION=\"$(VERSION)\"
 
-OBJS = $(patsubst %.c,%.o,$(SRCS))
+all: piface.bin piface
 
-all: piface.bin
-
-%.o: %.c
-	@echo CC $@
-	$(hide) $(CC) $(CFLAGS) $< -c -o $@
-
-piface.bin: $(OBJS)
-	@echo LINK $@
-	$(hide) $(CC) -t -.c -o $@ $(OBJS)
-
-clean:
+clean::
 	@echo CLEAN
-	$(hide) rm -f $(OBJS) piface.bin
+
+define build-piface
+$(eval objs := $(patsubst %.c,$(OBJDIR)/$(variant)/%.o,$(SRCS)))
+
+$(OBJDIR)/$(variant)/%.o: %.c
+	@echo CC $$@
+	@mkdir -p $$(dir $$@)
+	$(hide) $(cc) $(CFLAGS) $(cflags) $$< -c -o $$@
+
+$(variant): $(objs)
+	@echo LINK $$@
+	@mkdir -p $$(dir $$@)
+	$(hide) $(link) -o $$@ $$^
+
+clean::
+	$(hide) rm -f $(objs) $(variant)
+endef
+
+variant := piface.bin
+cflags := -DTARGET_PI
+cc := ack -mrpi -O
+link := $(cc) -.c -t
+$(eval $(build-piface))
+
+variant := piface
+cflags := -DTARGET_TESTBED
+cc := gcc
+link := $(cc)
+$(eval $(build-piface))

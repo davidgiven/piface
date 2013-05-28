@@ -11,7 +11,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <pi.h>
+
+#if defined TARGET_PI
+	#include <pi.h>
+#endif
 
 /* Command line parser (do not use reentrantly) */
 
