@@ -28,6 +28,10 @@ int main(int argc, const char* argv[])
 		fgets(buffer, sizeof(buffer), stdin);
 
 		execute_command(buffer);
+
+		if (error)
+			printf("Error: %s\n", error);
+		clearError();
 	}
 
 	return 0;

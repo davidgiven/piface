@@ -5,6 +5,7 @@ hide = @
 
 SRCS = \
 	src/main.c \
+	src/error.c \
 	src/mmc.c \
 	src/parser.c
 
@@ -43,8 +44,8 @@ $(eval $(build-piface))
 
 variant := piface
 cflags := -DTARGET_TESTBED
-cc := gcc
-link := $(cc)
+cc := ack -mlinux386 -O
+link := $(cc) -.c
 $(eval $(build-piface))
 
 -include $(depends)

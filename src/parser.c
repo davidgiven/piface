@@ -120,7 +120,7 @@ void execute_command(char* buffer)
 	parse_buffer(buffer);
 	if (parseerror)
 	{
-		printf("Parse error: %s\n", parseerror);
+		setError("Parse error: %s", parseerror);
 		return;
 	}
 
@@ -149,5 +149,5 @@ void execute_command(char* buffer)
 		}
 	}
 
-	printf("Command not recognised (try help).\n");
+	setError("Command not recognised (try help).");
 }

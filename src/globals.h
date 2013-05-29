@@ -12,11 +12,18 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdarg.h>
 #include <ctype.h>
 
 #if defined TARGET_PI
 	#include <pi.h>
 #endif
+
+/* Error reporting */
+
+extern char* error;
+extern void clearError(void);
+extern void setError(const char* msg, ...);
 
 /* User commands */
 
