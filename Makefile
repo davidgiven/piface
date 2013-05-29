@@ -15,16 +15,19 @@ all: piface.bin piface
 clean::
 	@echo CLEAN
 
+depends :=
 define build-piface
 $(eval objs := $(patsubst %.c,$(OBJDIR)/$(variant)/%.o,$(SRCS)))
+$(eval depends += $(patsubst %.c,$(OBJDIR)/$(variant)/%.d,$(SRCS)))
 
 $(OBJDIR)/$(variant)/%.o: %.c
-	@echo CC $$@
+	@echo CC $(variant) $$@
 	@mkdir -p $$(dir $$@)
+	$(hide) gcc $(CFLAGS) $(cflags) -MM -MQ $$@ -o $$(patsubst %.o,%.d,$$@) $$^
 	$(hide) $(cc) $(CFLAGS) $(cflags) $$< -c -o $$@
 
 $(variant): $(objs)
-	@echo LINK $$@
+	@echo LINK $(variant) $$@
 	@mkdir -p $$(dir $$@)
 	$(hide) $(link) -o $$@ $$^
 
@@ -43,3 +46,8 @@ cflags := -DTARGET_TESTBED
 cc := gcc
 link := $(cc)
 $(eval $(build-piface))
+
+-include $(depends)
+clean::
+	$(hide) rm -f $(depends)
+
