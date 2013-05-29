@@ -11,6 +11,7 @@
 static char* argv[MAX_WORDS];
 
 static void help_cb(int argc, const char* argv[]);
+static void set_cb(int argc, const char* argv[]);
 
 static const struct command help_cmd =
 {
@@ -23,9 +24,29 @@ static const struct command help_cmd =
 	help_cb
 };
 
+static const struct command set_cmd =
+{
+	"set",
+	"sets, lists or unsets an environment variable",
+
+	"To set one or more variables:\n"
+	"  set NAME1=VALUE1 NAME2=VALUE2...\n"
+	"\n"
+	"To unset one or more variables:\n"
+	"  set NAME1= NAME2=...\n"
+	"\n"
+	"To list all variables:\n"
+	"  set\n"
+	"\n"
+	"(To set a variable to a value containing spaces, quote the argument.)",
+
+	set_cb
+};
+
 static const struct command* commands[] =
 {
 	&help_cmd,
+	&set_cmd,
 };
 #define NUM_COMMANDS sizeof(commands)/sizeof(*commands)
 
@@ -139,6 +160,43 @@ static void help_cb(int argc, const char* argv[])
 	}
 	else
 		setError("'help' only understands one parameter");
+}
+
+static void set_cb(int argc, const char* argv[])
+{
+	if (argc == 1)
+	{
+		char** p = environ;
+		if (p)
+		{
+			while (*p)
+			{
+				printf("%s\n", *p);
+				p++;
+			}
+		}
+		return;
+	}
+
+	{
+		const char** p = &argv[1];
+		while (*p)
+		{
+			char* key = strdup(*p);
+			char* value;
+
+			strtok(key, "=");
+			value = strtok(NULL, "=");
+
+			if (!value || !*value)
+				unsetenv(key);
+			else
+				setenv(key, value, 1);
+
+			free(key);
+			p++;
+		}
+	}
 }
 
 void execute_command(char* buffer)

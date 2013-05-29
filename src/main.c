@@ -15,6 +15,7 @@ int main(int argc, const char* argv[])
 		pi_init_uart();
 	#endif
 
+	environ = NULL;
 	printf("\n\nPiFace v%s (c) 2013 David Given\n", VERSION);
 
 	/* mmc_init(); */
@@ -26,7 +27,6 @@ int main(int argc, const char* argv[])
 
 		buffer[sizeof(buffer)-1] = '\0';
 		fgets(buffer, sizeof(buffer), stdin);
-		printf("\n");
 
 		execute_command(buffer);
 

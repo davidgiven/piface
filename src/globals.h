@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
+#include <unistd.h>
 #include <ctype.h>
 
 #if defined TARGET_PI
