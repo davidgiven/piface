@@ -11,6 +11,25 @@
 static char* argv[MAX_WORDS];
 static const char* parseerror;
 
+static void help_cb(int argc, const char* argv[]);
+
+static const struct command help_cmd =
+{
+	"help",
+	"gets help on available commands",
+
+	"On its own, lists the available PiFace commands; when used with an\n"
+	"argument, shows more detailed information on one particular command.",
+
+	help_cb
+};
+
+static const struct command* commands[] =
+{
+	&help_cmd,
+};
+#define NUM_COMMANDS sizeof(commands)/sizeof(*commands)
+
 static void parse_buffer(char* buffer)
 {
 	int word = 0;
@@ -88,20 +107,47 @@ error: /* parsing failed */
 	return;
 }
 
+static void help_cb(int argc, const char* argv[])
+{
+	printf("Help!\n");
+}
+
 void execute_command(char* buffer)
 {
 	int i;
+	int argc;
 
 	parse_buffer(buffer);
 	if (parseerror)
-		printf("Parse error: %s\n", parseerror);
-
-	for (i=0;; i++)
 	{
-		const char* s = argv[i];
-		if (!s)
-			break;
-		printf("argv[%d] = <%s>\n", i, s);
+		printf("Parse error: %s\n", parseerror);
+		return;
 	}
 
+	/* Count commands. */
+
+	{
+		const char** p = (const char**) argv;
+		argc = 0;
+		while (*p++)
+			argc++;
+	}
+
+	/* Empty command lines are noops. */
+
+	if (argc == 0)
+		return;
+
+	/* Look for the command and run it if it exists. */
+
+	for (i=0; i<NUM_COMMANDS; i++)
+	{
+		if (strcmp(commands[i]->name, argv[0]) == 0)
+		{
+			commands[i]->callback(argc, (const char**) argv);
+			return;
+		}
+	}
+
+	printf("Command not recognised (try help).\n");
 }

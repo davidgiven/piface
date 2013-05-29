@@ -11,11 +11,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <ctype.h>
 
 #if defined TARGET_PI
 	#include <pi.h>
 #endif
+
+/* User commands */
+
+struct command
+{
+	const char* name;
+	const char* description;
+	const char* help;
+	void (*callback)(int argc, const char* argv[]);
+};
 
 /* Command line parser (do not use reentrantly) */
 
