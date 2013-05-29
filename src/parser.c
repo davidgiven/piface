@@ -9,7 +9,6 @@
 
 #define MAX_WORDS 32
 static char* argv[MAX_WORDS];
-static const char* parseerror;
 
 static void help_cb(int argc, const char* argv[]);
 
@@ -67,7 +66,7 @@ endofword: /* commit the current word and move to the next one */
 	word++;
 	if (word == MAX_WORDS)
 	{
-		parseerror = "Too many words in command line";
+		setError("too many words in command line");
 		goto error;
 	}
 	*outp++ = '\0';
@@ -79,7 +78,7 @@ singlequote: /* single quoted text */
 	{
 		case '\'': goto nextwordchar;
 		case '\0':
-			parseerror = "Unterminated single quote";
+			setError("unterminated single quote");
 			goto error;
 	}
 	*outp++ = c;
@@ -91,7 +90,7 @@ doublequote: /* double quoted text */
 	{
 		case '\"': goto nextwordchar;
 		case '\0':
-			parseerror = "Unterminated double quote";
+			setError("unterminated double quote");
 			goto error;
 	}
 	*outp++ = c;
@@ -99,7 +98,6 @@ doublequote: /* double quoted text */
 
 endofstring: /* parsing succeeded */
 	argv[word] = '\0';
-	parseerror = NULL;
 	return;
 
 error: /* parsing failed */
@@ -107,22 +105,49 @@ error: /* parsing failed */
 	return;
 }
 
+static const struct command* find_command(const char* name)
+{
+	int i;
+
+	for (i=0; i<NUM_COMMANDS; i++)
+	{
+		if (strcmp(commands[i]->name, name) == 0)
+			return commands[i];
+	}
+
+	return NULL;
+}
+
 static void help_cb(int argc, const char* argv[])
 {
-	printf("Help!\n");
+	if (argc == 1)
+	{
+		int i;
+
+		printf("Available commands:\n\n");
+		for (i=0; i<NUM_COMMANDS; i++)
+			printf("% 10s  %s\n", commands[i]->name, commands[i]->description);
+		printf("\nTry 'help <command>' for more information.\n");
+	}
+	else if (argc == 2)
+	{
+		const struct command* cmd = find_command(argv[1]);
+		if (cmd)
+			printf("%s\n", cmd->help);
+		else
+			setError("unknown command '%s'", argv[1]);
+	}
+	else
+		setError("'help' only understands one parameter");
 }
 
 void execute_command(char* buffer)
 {
-	int i;
 	int argc;
 
 	parse_buffer(buffer);
-	if (parseerror)
-	{
-		setError("Parse error: %s", parseerror);
+	if (error)
 		return;
-	}
 
 	/* Count commands. */
 
@@ -140,14 +165,11 @@ void execute_command(char* buffer)
 
 	/* Look for the command and run it if it exists. */
 
-	for (i=0; i<NUM_COMMANDS; i++)
 	{
-		if (strcmp(commands[i]->name, argv[0]) == 0)
-		{
-			commands[i]->callback(argc, (const char**) argv);
-			return;
-		}
+		const struct command* cmd = find_command(argv[0]);
+		if (cmd)
+			cmd->callback(argc, (const char**) argv);
+		else
+			setError("Command '%s' not recognised (try 'help').");
 	}
-
-	setError("Command not recognised (try help).");
 }

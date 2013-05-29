@@ -26,6 +26,7 @@ int main(int argc, const char* argv[])
 
 		buffer[sizeof(buffer)-1] = '\0';
 		fgets(buffer, sizeof(buffer), stdin);
+		printf("\n");
 
 		execute_command(buffer);
 
