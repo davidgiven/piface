@@ -15,12 +15,15 @@ static uint32_t read_cb(void* backend,
 		uint32_t offset, void* buffer, uint32_t length);
 static uint32_t write_cb(void* backend,
 		uint32_t offset, void* buffer, uint32_t length);
+static void info_cb(void* backend,
+		uint32_t* base, uint32_t* length);
 
 const struct filecbs filecbs_host =
 {
 	close_cb,
 	read_cb,
-	write_cb
+	write_cb,
+	info_cb
 };
 
 const struct vfs vfs_host =
@@ -64,6 +67,15 @@ static uint32_t write_cb(void* backend,
 	FILE* fp = backend;
     fseek(fp, offset, SEEK_SET);
 	return fwrite(buffer, 1, length, fp);
+}
+
+static void info_cb(void* backend,
+		uint32_t* base, uint32_t* length)
+{
+	FILE* fp = backend;
+	*base = 0;
+	fseek(fp, 0, SEEK_END);
+	*length = ftell(fp);
 }
 
 #endif

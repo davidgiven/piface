@@ -61,6 +61,7 @@ struct filecbs
 		uint32_t offset, void* buffer, uint32_t length);
 	uint32_t (*write)(void* backend,
 		uint32_t offset, void* buffer, uint32_t length);
+	void (*info)(void* backend, uint32_t* base, uint32_t* length);
 };
 
 struct file
@@ -75,6 +76,8 @@ extern uint32_t vfs_read(struct file* fp,
 	uint32_t offset, void* buffer, uint32_t length);
 extern uint32_t vfs_write(struct file* fp,
 	uint32_t offset, void* buffer, uint32_t length);
+extern void vfs_info(struct file* fp,
+	uint32_t* base, uint32_t* length);
 
 extern const struct vfs vfs_host;
 extern const struct vfs vfs_mem;

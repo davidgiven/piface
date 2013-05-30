@@ -19,12 +19,15 @@ static uint32_t read_cb(void* backend,
 		uint32_t offset, void* buffer, uint32_t length);
 static uint32_t write_cb(void* backend,
 		uint32_t offset, void* buffer, uint32_t length);
+static void info_cb(void* backend,
+		uint32_t* base, uint32_t* length);
 
 const struct filecbs filecbs_mem =
 {
 	close_cb,
 	read_cb,
-	write_cb
+	write_cb,
+	info_cb
 };
 
 const struct vfs vfs_mem =
@@ -110,5 +113,13 @@ static uint32_t write_cb(void* backend,
 		length = fp->length - offset;
 
 	memcpy((void*)s, buffer, length);
+}
+
+static void info_cb(void* backend,
+		uint32_t* base, uint32_t* length)
+{
+	struct memfile* fp = backend;
+	*base = fp->start;
+	*length = fp->length;
 }
 

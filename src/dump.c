@@ -25,6 +25,7 @@ const struct command dump_cmd =
 static void dump_cb(int argc, const char* argv[])
 {
 	struct file* fp;
+	uint32_t base;
 	uint32_t offset;
 	uint8_t buffer[16];
 
@@ -38,12 +39,13 @@ static void dump_cb(int argc, const char* argv[])
 	if (!fp)
 		return;
 
+	vfs_info(fp, &base, NULL);
 	offset = 0;
 	for (;;)
 	{
 		int i;
 		int r = vfs_read(fp, offset, buffer, 16);
-		printf("%08x : ", offset);
+		printf("%08x : ", offset + base);
 
 		for (i=0; i<r; i++)
 			printf("%02x ", buffer[i]);

@@ -77,3 +77,13 @@ uint32_t vfs_write(struct file* fp, uint32_t offset, void* buffer, uint32_t len)
 {
 	return fp->cb->write(fp->backend, offset, buffer, len);
 }
+
+void vfs_info(struct file* fp, uint32_t* base, uint32_t* length)
+{
+	uint32_t dummy;
+	if (!base)
+		base = &dummy;
+	if (!length)
+		length = &dummy;
+	fp->cb->info(fp->backend, base, length);
+}
