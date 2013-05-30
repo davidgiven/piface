@@ -97,7 +97,7 @@ static uint32_t read_cb(void* backend,
 	if ((offset+length) > fp->length)
 		length = fp->length - offset;
 
-	memcpy(buffer, (void*)s, length);
+	memcpy(buffer, (void*)(uintptr_t)s, length);
 	return length;
 }
 
@@ -112,7 +112,7 @@ static uint32_t write_cb(void* backend,
 	if ((offset+length) > fp->length)
 		length = fp->length - offset;
 
-	memcpy((void*)s, buffer, length);
+	memcpy((void*)(uintptr_t)s, buffer, length);
 }
 
 static void info_cb(void* backend,

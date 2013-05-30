@@ -16,6 +16,9 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
+#include <fcntl.h>
+
+extern char** environ;
 
 #if defined TARGET_PI
 	#include <pi.h>

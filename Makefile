@@ -49,8 +49,8 @@ $(eval $(build-piface))
 
 variant := piface
 cflags := -DTARGET_TESTBED
-cc := ack -mlinux386 -O
-link := $(cc) -.c
+cc := gcc -g
+link := $(cc)
 $(eval $(build-piface))
 
 -include $(depends)
