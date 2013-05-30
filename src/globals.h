@@ -36,9 +36,42 @@ struct command
 	void (*callback)(int argc, const char* argv[]);
 };
 
+extern const struct command sx_cmd;
+extern const struct command rx_cmd;
+
 /* Command line parser (do not use reentrantly) */
 
 extern void execute_command(char* cmd);
+
+/* VFS declarations */
+
+struct vfs
+{
+	const char* name;
+	struct file* (*open)(const char* path, int flags);
+};
+
+struct filecbs
+{
+	void (*close)(void* backend);
+	uint32_t (*read)(void* backend,
+		uint32_t offset, void* buffer, uint32_t length);
+	uint32_t (*write)(void* backend,
+		uint32_t offset, void* buffer, uint32_t length);
+};
+
+struct file
+{
+	void* backend;
+	struct filecbs* cb;
+};
+
+extern struct file* vfs_open(const char* path);
+extern void vfs_close(struct file* fp);
+extern uint32_t vfs_read(struct file* fp,
+	uint32_t offset, void* buffer, uint32_t length);
+extern uint32_t vfs_write(struct file* fp,
+	uint32_t offset, void* buffer, uint32_t length);
 
 /* MMC interface */
 

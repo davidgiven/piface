@@ -7,7 +7,9 @@ SRCS = \
 	src/main.c \
 	src/error.c \
 	src/mmc.c \
-	src/parser.c
+	src/parser.c \
+	src/vfs.c \
+	src/xmodem.c
 
 CFLAGS = -DVERSION=\"$(VERSION)\"
 
