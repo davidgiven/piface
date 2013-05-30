@@ -39,6 +39,7 @@ struct command
 
 extern const struct command sx_cmd;
 extern const struct command rx_cmd;
+extern const struct command dump_cmd;
 
 /* Command line parser (do not use reentrantly) */
 
