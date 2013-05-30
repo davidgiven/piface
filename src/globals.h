@@ -15,6 +15,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <errno.h>
 
 #if defined TARGET_PI
 	#include <pi.h>
@@ -48,7 +49,8 @@ extern void execute_command(char* cmd);
 struct vfs
 {
 	const char* name;
-	struct file* (*open)(const char* path, int flags);
+	const struct filecbs* callbacks;
+	void* (*open)(const char* path, int flags);
 };
 
 struct filecbs
@@ -63,15 +65,18 @@ struct filecbs
 struct file
 {
 	void* backend;
-	struct filecbs* cb;
+	const struct filecbs* cb;
 };
 
-extern struct file* vfs_open(const char* path);
+extern struct file* vfs_open(const char* path, int flags);
 extern void vfs_close(struct file* fp);
 extern uint32_t vfs_read(struct file* fp,
 	uint32_t offset, void* buffer, uint32_t length);
 extern uint32_t vfs_write(struct file* fp,
 	uint32_t offset, void* buffer, uint32_t length);
+
+extern const struct vfs vfs_host;
+extern const struct vfs vfs_mem;
 
 /* MMC interface */
 

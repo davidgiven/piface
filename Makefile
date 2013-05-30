@@ -9,6 +9,8 @@ SRCS = \
 	src/mmc.c \
 	src/parser.c \
 	src/vfs.c \
+	src/vfs_mem.c \
+	src/vfs_host.c \
 	src/xmodem.c
 
 CFLAGS = -DVERSION=\"$(VERSION)\"

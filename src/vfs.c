@@ -7,16 +7,34 @@
 
 #include "globals.h"
 
-#if 0
 static const struct vfs* vfs[] =
 {
-};
+	&vfs_mem,
+#if defined TARGET_TESTBED
+	&vfs_host
 #endif
+};
 #define NUM_VFS sizeof(vfs)/sizeof(*vfs)
 
-struct file* vfs_open(const char* path)
+static const struct vfs* find_vfs(const char* name, int namelen)
+{
+	int i;
+
+	for (i=0; i<NUM_VFS; i++)
+	{
+		if ((memcmp(vfs[i]->name, name, namelen) == 0) &&
+		    (vfs[i]->name[namelen] == '\0'))
+			return vfs[i];
+	}
+
+	return NULL;
+}
+
+struct file* vfs_open(const char* path, int flags)
 {
 	const char* e = strchr(path, ':');
+	const struct vfs* fs;
+	void* backend;
 	int len;
 
 	if (!e)
@@ -26,8 +44,21 @@ struct file* vfs_open(const char* path)
 	}
 
 	len = e-path;
+	fs = find_vfs(path, len);
+	if (!fs)
+	{
+		setError("unknown file system '%.*s'", len, path);
+		return NULL;
+	}
 
-	printf("vfs=<%.*s>\n", len, path);
+	backend = fs->open(e+1, flags);
+	if (backend)
+	{
+		struct file* fp = malloc(sizeof(struct file));
+		fp->backend = backend;
+		fp->cb = fs->callbacks;
+		return fp;
+	}
 	return NULL;
 }
 

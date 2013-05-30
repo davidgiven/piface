@@ -44,7 +44,7 @@ static void sx_cb(int argc, const char* argv[])
 		return;
 	}
 
-	fp = vfs_open(argv[1]);
+	fp = vfs_open(argv[1], O_RDONLY);
 	if (!fp)
 		return;
 }
