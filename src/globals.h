@@ -40,8 +40,8 @@ struct command
 	void (*callback)(int argc, const char* argv[]);
 };
 
-extern const struct command sx_cmd;
-extern const struct command rx_cmd;
+extern const struct command send_cmd;
+extern const struct command recv_cmd;
 extern const struct command dump_cmd;
 
 /* Command line parser (do not use reentrantly) */

@@ -49,7 +49,7 @@ $(eval $(build-piface))
 
 variant := piface
 cflags := -DTARGET_TESTBED
-cc := gcc -g
+cc := gcc -g -Wall
 link := $(cc)
 $(eval $(build-piface))
 

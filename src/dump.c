@@ -7,21 +7,6 @@
 
 #include "globals.h"
 
-static void dump_cb(int argc, const char* argv[]);
-
-const struct command dump_cmd =
-{
-	"dump",
-	"hex-dumps a file",
-
-	"Syntax:\n"
-	"  dump <filename>\n"
-	"To dump memory, use a mem: file, e.g.:\n"
-	"  dump mem:80000000+ff",
-
-	dump_cb
-};
-
 static void dump_cb(int argc, const char* argv[])
 {
 	struct file* fp;
@@ -50,7 +35,7 @@ static void dump_cb(int argc, const char* argv[])
 		for (i=0; i<r; i++)
 			printf("%02x ", buffer[i]);
 		for (i=r; i<16; i++)
-			printf("** ");
+			printf("   ");
 
 		printf(": ");
 
@@ -70,4 +55,18 @@ static void dump_cb(int argc, const char* argv[])
 
 	vfs_close(fp);
 }
+
+const struct command dump_cmd =
+{
+	"dump",
+	"hex-dumps a file",
+
+	"Syntax:\n"
+	"  dump <filename>\n"
+	"To dump memory, use a mem: file, e.g.:\n"
+	"  dump mem:80000000+ff",
+
+	dump_cb
+};
+
 

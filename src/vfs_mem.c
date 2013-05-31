@@ -113,6 +113,7 @@ static uint32_t write_cb(void* backend,
 		length = fp->length - offset;
 
 	memcpy((void*)(uintptr_t)s, buffer, length);
+	return length;
 }
 
 static void info_cb(void* backend,

@@ -34,11 +34,6 @@ const struct vfs vfs_host =
 	open_cb
 };
 
-static void malformed(void)
-{
-	setError("malformed mem: path (use <start> or <start>+<len>)");
-}
-
 static void* open_cb(const char* path, int flags)
 {
 	FILE* fp = fopen(path, (flags==O_RDONLY) ? "r" : "w+");

@@ -47,8 +47,8 @@ static const struct command* commands[] =
 {
 	&help_cmd,
 	&set_cmd,
-	&sx_cmd,
-	&rx_cmd,
+	&send_cmd,
+	&recv_cmd,
 	&dump_cmd,
 };
 #define NUM_COMMANDS sizeof(commands)/sizeof(*commands)
