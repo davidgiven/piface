@@ -7,13 +7,14 @@
 
 #include "globals.h"
 
-static char buffer[256];
-
 int main(int argc, const char* argv[])
 {
 	#if defined TARGET_PI
 		pi_init_uart();
 	#endif
+
+	init_console();
+	newlines_on();
 
 	environ = NULL;
 	printf("\n\nPiFace v%s (c) 2013 David Given\n", VERSION);
@@ -22,11 +23,10 @@ int main(int argc, const char* argv[])
 
 	for (;;)
 	{
-		printf("> ");
-		fflush(stdout);
+		char* buffer;
 
-		buffer[sizeof(buffer)-1] = '\0';
-		fgets(buffer, sizeof(buffer), stdin);
+		printf("> ");
+		buffer = readline();
 
 		execute_command(buffer);
 

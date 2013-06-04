@@ -17,6 +17,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <termios.h>
 
 extern char** environ;
 
@@ -46,6 +47,10 @@ extern const struct command dump_cmd;
 
 /* Command line parser (do not use reentrantly) */
 
+extern void init_console(void);
+extern void newlines_on(void);
+extern void newlines_off(void);
+extern char* readline(void);
 extern void execute_command(char* cmd);
 
 /* VFS declarations */
