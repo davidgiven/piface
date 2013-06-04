@@ -10,8 +10,6 @@
 
 static void xmodem_send(struct file* fp, int len)
 {
-	struct termios oldtermios;
-	struct termios newtermios;
 	uint8_t block;
 	uint32_t offset;
 	uint32_t thisblocklen;
@@ -21,14 +19,8 @@ static void xmodem_send(struct file* fp, int len)
 	uint8_t c;
 
 	printf("Give your local XMODEM receive command now.\n");
-
-	tcgetattr(0, &oldtermios);
-	newtermios = oldtermios;
-	newtermios.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-    newtermios.c_oflag &= ~(OPOST);
-    newtermios.c_cflag |= (CS8);
-    newtermios.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-	tcsetattr(0, TCSAFLUSH, &newtermios);
+	fflush(stdout);
+	newlines_off();
 
 	buffer = malloc(1024);
 
@@ -42,7 +34,8 @@ static void xmodem_send(struct file* fp, int len)
 	for (;;)
 	{
 		int i;
-        read(0, &c, 1);
+		fflush(stdout);
+		c = getchar();
 
         switch (c)
         {
@@ -101,37 +94,30 @@ static void xmodem_send(struct file* fp, int len)
 		/* Write out the packet. */
 
         if (thisblocklen == 128)
-            c = 1; /* SOH */
+            putchar(1); /* SOH */
 		else
-			c = 2; /* STX */
-		write(1, &c, 1);
-		c = block;
-		write(1, &c, 1);
-		c = ~block;
-		write(1, &c, 1);
+			putchar(2); /* STX */
+		putchar(block);
+		putchar(~block);
 
-		write(1, buffer, thisblocklen);
+		fwrite(buffer, 1, thisblocklen, stdout);
 
 		if (crc16)
-		{
-			c = crc >> 8;
-			write(1, &c, 1);
-		}
-
-		c = crc;
-		write(1, &c, 1);
+			putchar(crc >> 8);
+		putchar(crc);
 	}
 eof:
 
-	c = 4; /* EOT */
-	write(1, &c, 1);
+	putchar(4); /* EOT */
 
 	/* Wait for ACK (we have to block here or the receiver will barf). */
-	read(0, &c, 1);
+	fflush(stdout);
+	c = getchar();
 
 	free(buffer);
-	tcsetattr(0, TCSANOW, &oldtermios);
-	printf("File send complete.\n");
+	fflush(stdout);
+	newlines_on();
+	printf("File transmission complete.\n");
 }
 
 static void send_cb(int argc, const char* argv[])

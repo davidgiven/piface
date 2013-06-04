@@ -15,6 +15,8 @@ int main(int argc, const char* argv[])
 
 	init_console();
 	newlines_on();
+	newlines_off();
+	newlines_on();
 
 	environ = NULL;
 	printf("\n\nPiFace v%s (c) 2013 David Given\n", VERSION);

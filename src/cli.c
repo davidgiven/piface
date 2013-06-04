@@ -39,7 +39,7 @@ void newlines_on(void)
 {
 	struct termios t;
 	tcgetattr(0, &t);
-    t.c_oflag |= OPOST;
+    t.c_oflag |= (INLCR | OPOST);
 	tcsetattr(0, TCSAFLUSH, &t);
 }
 
@@ -47,7 +47,7 @@ void newlines_off(void)
 {
 	struct termios t;
 	tcgetattr(0, &t);
-    t.c_oflag &= ~OPOST;
+    t.c_oflag &= ~(INLCR | OPOST);
 	tcsetattr(0, TCSAFLUSH, &t);
 }
 
