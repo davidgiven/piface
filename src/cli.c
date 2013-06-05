@@ -28,7 +28,7 @@ void init_console(void)
     newtermios.c_oflag &= ~(OPOST);
     newtermios.c_cflag |= (CS8);
     newtermios.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-	tcsetattr(0, TCSAFLUSH, &newtermios);
+	tcsetattr(0, TCSADRAIN, &newtermios);
 	atexit(deinit_console);
 
 	setvbuf(stdin, NULL, _IONBF, 0);
@@ -40,7 +40,7 @@ void newlines_on(void)
 	struct termios t;
 	tcgetattr(0, &t);
     t.c_oflag |= (INLCR | OPOST);
-	tcsetattr(0, TCSAFLUSH, &t);
+	tcsetattr(0, TCSADRAIN, &t);
 }
 
 void newlines_off(void)
@@ -48,7 +48,7 @@ void newlines_off(void)
 	struct termios t;
 	tcgetattr(0, &t);
     t.c_oflag &= ~(INLCR | OPOST);
-	tcsetattr(0, TCSAFLUSH, &t);
+	tcsetattr(0, TCSADRAIN, &t);
 }
 
 static void extendbuffer(int size)
