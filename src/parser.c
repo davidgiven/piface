@@ -74,10 +74,12 @@ startword: /* start of new word; is this the end of string? */
 	goto nextwordchar;
 
 nextwordchar: /* add a char to the current word */
-	c = *inp++;
+	c = *inp;
+	if (c == '\0')
+		goto endofword;
+	inp++;
 	switch (c)
 	{
-		case '\0': goto endofword;
 		case '\'': goto singlequote;
 		case '\"': goto doublequote;
 	}
