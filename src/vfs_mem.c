@@ -75,7 +75,7 @@ static void* open_cb(const char* path, int flags)
 	}
 
 	fp = malloc(sizeof(struct memfile));
-	fp->start = start;
+	fp->start = (uint32_t) pi_phys_to_user((void*) start);
 	fp->length = length;
 	return fp;
 }
