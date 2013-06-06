@@ -23,6 +23,8 @@ extern char** environ;
 
 #if defined TARGET_PI
 	#include <pi.h>
+#else
+	#define pi_phys_to_user(x) x
 #endif
 
 /* Error reporting */
@@ -44,6 +46,7 @@ struct command
 extern const struct command send_cmd;
 extern const struct command recv_cmd;
 extern const struct command dump_cmd;
+extern const struct command go_cmd;
 
 /* Command line parser (do not use reentrantly) */
 

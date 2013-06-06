@@ -13,7 +13,8 @@ SRCS = \
 	src/vfs_host.c \
 	src/dump.c \
 	src/xmodem.c \
-	src/cli.c
+	src/cli.c \
+	src/misc.c
 
 CFLAGS = -DVERSION=\"$(VERSION)\"
 
