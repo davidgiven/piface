@@ -1,0 +1,73 @@
+                                PIFACE v0.2
+                                ===========
+                                  
+                         Copyright (C) 2013 David Given
+                                 2013-06-07
+            
+            
+                                 
+INTRODUCTION
+============
+
+piface is a very simple but hopefully useful boot monitor for the Raspberry
+Pi. Unlike most other Raspberry Pi software, it runs directly on the
+Videocore CPU rather than on the ARM coprocessor. This means you can use it
+to run Videocore programs directly on the bare metal without having to use
+the ARM-Videocore APIs.
+
+
+
+INSTALLATION
+============
+
+piface requires a modified version of The Amsterdam Compiler Kit with
+support for generating (crude) Videocore machine code. You can get the ACK
+here:
+
+    http://tack.sourceforge.net
+
+Unfortunately, at time of writing the Videocore code generator is unreleased.
+This means you'll have to check out the ACK from the VCS, get the
+dtrg-videocore branch, and build it and install it yourself.
+
+Once the compiler is ready, you can build piface with:
+
+    make
+
+This will build piface.bin, which is the Videocore binary, and piface, which
+is a standalone version built with gcc for test purposes. You can safely
+ignore this if you're not developing piface itself.
+
+To use, copy piface.bin onto an SD card, and call it bootcode.bin. Insert
+this into a Raspberry Pi, apply power, and it will run.
+
+piface communicates via the mini UART, so you'll need to have this connected
+to something (at 115200 baud 8n1 no flow control).
+
+
+
+MORE INFORMATION
+================
+
+piface's home is at http://cowlark.com/piface.
+
+Alternatively, you will find a copy of the website (in easier-to-read more-or-
+less plain text format) in the doc directory.
+
+
+
+THE AUTHOR
+==========
+
+piface was written by me, David Given. You may contact me at dg@cowlark.com,
+or visit my website at http://www.cowlark.com. There may or may not be
+anything interesting there.
+
+
+
+LICENSING
+=========
+
+piface is licensed under the Simplified BSD license. See COPYING for the
+full text.
+
