@@ -31,10 +31,10 @@ For certain values of useful, of course.
 Most likely what you want is the precompiled binary:
 
 <blockquote class='link'>
-<a href='../../../raw/bin/piface-0.1.bin.gz'>
+<a href='../../../doc/stable/bin/piface-0.1.bin.gz'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../raw/bin/piface-0.1.bin.gz'>piface-0.1.bin.gz</a>
+<a href='../../../doc/stable/piface-0.1.bin.gz'>piface-0.1.bin.gz</a>
 <p>Version 0.1 precompiled binary.</p>
 </blockquote>
 
