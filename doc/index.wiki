@@ -13,7 +13,7 @@ piface uses the mini-UART as a serial terminal.
 Right now piface's feature set is fairly thin as the capabilities of the
 Videocore side of the Pi are still being investigated, but it supports:
 
-  *  uploads and downloads via XMODEM
+  *  downloads via XMODEM
   *  executing code
   *  modifying and dumping memory
   *  lots of plumbing for more interesting stuff later
@@ -23,7 +23,8 @@ get in touch...
 
 <h3>What's new?</h3>
 
-<b>1970-01-01: Version 0.1 released!</b>
+<b>2013-06-07: Version 0.1 released!</b> The first actually useful version.
+For certain values of useful, of course.
 
 <h3>Where can I get it?</h3>
 
