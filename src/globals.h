@@ -25,6 +25,7 @@ extern char** environ;
 	#include <pi.h>
 #else
 	#define pi_phys_to_user(x) x
+	#define pi_user_to_phys(x) x
 #endif
 
 /* Error reporting */

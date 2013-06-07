@@ -120,7 +120,7 @@ static void info_cb(void* backend,
 		uint32_t* base, uint32_t* length)
 {
 	struct memfile* fp = backend;
-	*base = fp->start;
+	*base = (uint32_t) pi_user_to_phys((void*) fp->start);
 	*length = fp->length;
 }
 
