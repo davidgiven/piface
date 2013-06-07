@@ -51,6 +51,7 @@ static const struct command* commands[] =
 	&recv_cmd,
 	&dump_cmd,
 	&go_cmd,
+	&poke_cmd,
 };
 #define NUM_COMMANDS sizeof(commands)/sizeof(*commands)
 
