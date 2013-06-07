@@ -1,0 +1,147 @@
+<title>a boot monitor for the Raspberry Pi</title>
+
+<h3>What is it?</h3>
+
+piface is a very simple but hopefully useful boot monitor for the Raspberry
+Pi. Unlike most other Raspberry Pi software, it runs directly on the
+Videocore CPU rather than on the ARM coprocessor. This means you can use
+it to run Videocore programs directly on the bare metal without having to
+use the ARM-Videocore APIs.
+
+piface uses the mini-UART as a serial terminal.
+
+Right now piface's feature set is fairly thin as the capabilities of the
+Videocore side of the Pi are still being investigated, but it supports:
+
+  *  uploads and downloads via XMODEM
+  *  executing code
+  *  modifying and dumping memory
+  *  lots of plumbing for more interesting stuff later
+
+Regarding that last, if anyone knows how the MMC interface works, please
+get in touch...
+
+<h3>What's new?</h3>
+
+<b>1970-01-01: Version 0.1 released!</b>
+
+<h3>Where can I get it?</h3>
+
+Most likely what you want is the precompiled binary:
+
+<blockquote class='link'>
+<a href='../../../raw/bin/piface-0.1.bin.gz'>
+  <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
+</a>
+<a href='../../../raw/bin/piface-0.1.bin.gz'>piface-0.1.bin.gz</a>
+<p>Version 0.1 precompiled binary.</p>
+</blockquote>
+
+The source code is available here:
+
+<blockquote class='link'>
+<a href='../../../tarball/piface-0.1.tar.gz?uuid=release-0.1'>
+  <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
+</a>
+<a href='../../../tarball/piface-0.1.tar.gz?uuid=release-0.1'>piface-0.1.tar.gz</a>
+<p>Version 0.1 source code.</p>
+</blockquote>
+
+However,
+In addition, you can download
+an <a href="../../../tarball/piface-tip.tar.gz?uuid=tip">the latest version
+from the VCS</a>. This is not guaranteed to work, or even to build. I'd
+recommend using the formal release above.
+
+Another way of getting the version under development is by
+checking out the source repository using <a href="http://fossil-scm.org">the
+Fossil DVCS</a>. Use the following commands:
+
+<verbatim>fossil clone http://cowlark.com/piface piface.fossil
+mkdir piface
+fossil open ../piface.fossil
+</verbatim>
+
+piface builds with a special development version of <a href="http://tack.sf.net">The
+Amsterdam Compiler Kit</a>, modified to generate (rather crude) Videocore IV
+machine code. This is easy but not trivial; if you're interested, email me
+and ask.
+
+<h3>How do I use it?</h3>
+
+Copy your chosen <tt>piface.bin</tt> file to <tt>bootcode.bin</tt> on a FAT
+formatted SD card. Insert card into Raspberry Pi and apply power. piface runs!
+
+To actually interact with it, you'll need to connect the mini UART on the Pi
+to a PC. You can find <a href="http://jeffskinnerbox.wordpress.com/2012/12/05/raspberry-pi-serial-communication/">information
+here</a>. <b>Important note!</b> The mini UART on the Pi is a 3.3V device. If
+you wire it directly to a PC serial port, you are very likely to explode your
+Pi. You will need an adapter. I recommend <a href="http://adafruit.com/products/954">USB
+serial adapters</a> for this.
+
+Once set up, connect your serial terminal at 115200 baud 8N1, and when you
+start the Pi you should see:
+
+<pre>
+PiFace v0.1 (c) 2013 David Given
+>
+</pre>
+
+You can now type commands. Here are some useful ones:
+
+  *  To dump memory to the console: <code>dump mem:80000000+200</code>
+  *  To change memory: <code>poke byte 8000000 1 2 3 4</code>
+  *  To download some data via XMODEM: <code>send mem:80000000+10000</code>
+  *  To start execution at a particular address: <code>go 0</code>
+  *  To get generic help: <code>help</code>
+
+piface uses an internal VFS; right now the only one supported is <code>mem:</code>.
+It uses filename of the form <code>mem:address+length</code>. You may also
+use <code>mem:address</code> for unbounded memory regions, but be careful of
+this (because they're 4GB long and will take a while to dump to the console).
+
+Eventually there'll be support for the FAT filesystem on the SD card.
+
+If you try to do something to an unmapped memory region, or if you corrupt
+piface's workspace, piface will let you know by crashing. Power cycle the Pi
+to reset.
+
+Some basic technical details follow:
+
+piface gets loaded into the 128kB of SRAM at 80000000. It initialises the
+mini UART but does not attempt to change the PLLs or set up the SDRAM.
+
+The internal boot ROM is mapped at 60000000.
+
+Peripherals are mapped at 7e000000. You can manipulate them with <tt>poke</tt> if
+you're really careful. Note that <tt>dump</tt> always reads bytes.
+
+<h3>Why shouldn't I use it?</h3>
+
+You cannot do anything useful with piface yet. You cannot do anything useful
+with the Videocore side of the Raspberry Pi yet. The only purpose that piface
+has is to make it easier to poke the Videocore to find out how it works. If
+this is the sort of thing that interests you, then piface is for you. If not,
+stay well clear (and use the ARM instead).
+
+In addition, Calculon is very new and is probably riddled with bugs. Find
+any? Let me know by <a href="../../../tktnew">filing a bug</a> (it'll ask you
+to log in; you can either create an account or log in as anonymous).
+
+<h3>Who wrote it?</h3>
+
+I, <a href="http://cowlark.com">David Given</a>, wrote it. Got any comments,
+criticism, cake? Send it to <a href="mailto:dg@cowlark.com">dg@cowlark.com</a>.
+If there's interest, I'll set up a mailing list.
+
+<h3>What's the license?</h3>
+
+Calculon is distributable under the terms of the
+<a href="copying.wiki">Simplified BSD License</a>.
+
+<h2 class='comments-title'>Comments on this page</h2>
+<table class='comments' border='0'><tr>
+<td id='commentator-viewer'></td>
+<td id='commentator-poster'></td>
+</tr></table>
+
