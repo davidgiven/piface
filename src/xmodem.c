@@ -82,9 +82,10 @@ static void xmodem_send(struct file* fp, int len)
 				crc ^= c<<8;
 				for (j=0; j<8; j++)
 				{
-					crc <<= 1;
-					if (crc & 0x10000)
-						crc ^= 0x1021;
+					if (crc & 0x8000)
+                    	crc = (crc << 1) ^ 0x1021;
+                    else
+                        crc = (crc << 1);
 				}
 			}
 			else
