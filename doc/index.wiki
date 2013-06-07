@@ -34,7 +34,7 @@ Most likely what you want is the precompiled binary:
 <a href='../../../doc/stable/bin/piface-0.1.bin.gz'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../doc/stable/piface-0.1.bin.gz'>piface-0.1.bin.gz</a>
+<a href='../../../doc/stable/bin/piface-0.1.bin.gz'>piface-0.1.bin.gz</a>
 <p>Version 0.1 precompiled binary.</p>
 </blockquote>
 
