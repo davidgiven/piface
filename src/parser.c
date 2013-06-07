@@ -48,7 +48,9 @@ static const struct command* commands[] =
 	&help_cmd,
 	&set_cmd,
 	&send_cmd,
+#if 0 /* doesn't work yet */
 	&recv_cmd,
+#endif
 	&dump_cmd,
 	&go_cmd,
 	&poke_cmd,
