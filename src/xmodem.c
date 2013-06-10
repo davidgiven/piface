@@ -161,9 +161,9 @@ static void xmodem_recv(struct file* fp)
 {
 	uint8_t block, nextblock;
 	uint32_t offset;
+	uint32_t nextoffset;
 	uint8_t* buffer;
 	uint8_t c;
-	uint32_t lastblocksize;
 	uint32_t thisblocksize;
 	uint16_t blockcrc;
 	int command;
@@ -172,9 +172,8 @@ static void xmodem_recv(struct file* fp)
 	fflush(stdout);
 	newlines_off();
 
-	offset = 0;
+	offset = nextoffset = 0;
 	block = 1;
-	lastblocksize = 0;
 	command = 'C';
 
 	buffer = malloc(1024+4); /* maximum size for a packet */
@@ -245,42 +244,39 @@ static void xmodem_recv(struct file* fp)
 
 		nextblock = block + 1; /* ensure wrapping occurs */
 		blockcrc = (buffer[2+thisblocksize+0]<<8) | buffer[2+thisblocksize+1];
-		#if 0
-		if ((buffer[0] == ~buffer[1])
+		if ((buffer[0] == (~buffer[1] & 0xff))
 		    && ((buffer[0] == block) || (buffer[0] == nextblock))
 		    && (blockcrc == crc)
 		    )
-		    #endif
 		{
-			/* Valid packet! Write it to disk. If this is a new block, and
-			 * not a resend, advance the output pointer. */
+			/* Valid packet! Write it to disk, first checking to see whether
+			 * this is a new block or not. */
 
 			if (buffer[0] == nextblock)
 			{
-				offset += lastblocksize;
-				lastblocksize = thisblocksize;
-				block += 1;
+				offset = nextoffset;
+				block = nextblock;
 			}
 
 			vfs_write(fp, offset, buffer+2, thisblocksize);
+			nextoffset = offset + thisblocksize;
+
 			command = 6; /* ACK */
 		}
-		#if 0
 		else
 		{
 			/* Invalid packet --- request resend. */
 			command = 21; /* NAK */
 		}
-		#endif
 	}
 
 eot:
 	putchar(6); /* ACK */
 	fflush(stdout);
 
-	newlines_on();
 	free(buffer);
 
+	newlines_on();
 	isleep(1);
 	printf("File reception complete.\n");
 }
