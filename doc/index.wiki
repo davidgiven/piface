@@ -13,7 +13,7 @@ piface uses the mini-UART as a serial terminal.
 Right now piface's feature set is fairly thin as the capabilities of the
 Videocore side of the Pi are still being investigated, but it supports:
 
-  *  downloads via XMODEM
+  *  uploads and downloads via XMODEM
   *  executing code
   *  modifying and dumping memory
   *  lots of plumbing for more interesting stuff later
@@ -23,7 +23,10 @@ get in touch...
 
 <h3>What's new?</h3>
 
-<b>2013-06-07: Version 0.1 released!</b> The first actually useful version.
+<b>2013-06-13: Version 0.2 released!</b> Now with (barely tested) XMODEM
+receive, so you can send data from the PC to the Pi.
+
+2013-06-07: Version 0.1 released! The first actually useful version.
 For certain values of useful, of course.
 
 <h3>Where can I get it?</h3>
@@ -93,6 +96,7 @@ You can now type commands. Here are some useful ones:
   *  To dump memory to the console: <code>dump mem:80000000+200</code>
   *  To change memory: <code>poke byte 8000000 1 2 3 4</code>
   *  To download some data via XMODEM: <code>send mem:80000000+10000</code>
+  *  To upload some data via XMODEM: <code>recv mem:60008000</code>
   *  To start execution at a particular address: <code>go 0</code>
   *  To get generic help: <code>help</code>
 
@@ -107,12 +111,41 @@ If you try to do something to an unmapped memory region, or if you corrupt
 piface's workspace, piface will let you know by crashing. Power cycle the Pi
 to reset.
 
-Some basic technical details follow:
+<h4>On XMODEM</h4>
 
-piface gets loaded into the 128kB of SRAM at 80000000. It initialises the
-mini UART but does not attempt to change the PLLs or set up the SDRAM.
+You can use XMODEM to transfer data to/from piface. The details will depend
+on which terminal emulator you're using. Normally, after issuing the piface
+<code>send</code> or <code>recv</code> command, you'll then issue the
+appropriate local command and the transfer will proceed.
 
-The internal boot ROM is mapped at 60000000.
+If you're using <a href="http://www.gnu.org/software/screen/">GNU screen</a>,
+which is my preferred least bad terminal emulator, you can do this by
+installing the venerable <a href="http://ohse.de/uwe/software/lrzsz.html">lrzsz</a>
+package. Then, to send a file, do:
+
+<pre>^A :!!! sx -bk file.img
+</pre>
+
+...and to receive a file, do:
+
+<pre>^A :!!! rx -bc file.img
+</pre>
+
+(^A means to type a CTRL+A to get the screen's command line.) The parameters
+are important. <code>-b</code> sets binary mode, which prevents mangled
+transfers; <code>-k</code> sets 1kB blocks; <code>-c</code> uses 16-bit CRCs
+(which also prevents mangled transfers).
+
+<h4>Technical details</h4>
+
+When the Raspberry Pi starts, there's 128kB of RAM at 80000000, which is
+where piface is loaded. piface then initialises the mini UART but does not
+attempt to change the PLLs or set up the SDRAM.
+
+The internal boot ROM is mapped at 60000000. There's 0xd4 bytes of RAM at
+60008000. There's about a kilobyte more RAM at 60008214, but there seems to
+be interrupt workspace immediately afterwards and you risk locking the device
+if you play with it too much.
 
 Peripherals are mapped at 7e000000. You can manipulate them with <tt>poke</tt> if
 you're really careful. Note that <tt>dump</tt> always reads bytes.
