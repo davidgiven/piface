@@ -34,21 +34,21 @@ For certain values of useful, of course.
 Most likely what you want is the precompiled binary:
 
 <blockquote class='link'>
-<a href='../../../doc/stable/bin/piface-0.1.bin.gz'>
+<a href='../../../doc/stable/bin/piface-0.2.bin.gz'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../doc/stable/bin/piface-0.1.bin.gz'>piface-0.1.bin.gz</a>
-<p>Version 0.1 precompiled binary.</p>
+<a href='../../../doc/stable/bin/piface-0.2.bin.gz'>piface-0.2.bin.gz</a>
+<p>Version 0.2 precompiled binary.</p>
 </blockquote>
 
 The source code is available here:
 
 <blockquote class='link'>
-<a href='../../../tarball/piface-0.1.tar.gz?uuid=release-0.1'>
+<a href='../../../tarball/piface-0.2.tar.gz?uuid=release-0.2'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../tarball/piface-0.1.tar.gz?uuid=release-0.1'>piface-0.1.tar.gz</a>
-<p>Version 0.1 source code.</p>
+<a href='../../../tarball/piface-0.2.tar.gz?uuid=release-0.2'>piface-0.2.tar.gz</a>
+<p>Version 0.2 source code.</p>
 </blockquote>
 
 However,
