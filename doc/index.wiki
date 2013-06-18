@@ -23,7 +23,10 @@ get in touch...
 
 <h3>What's new?</h3>
 
-<b>2013-06-13: Version 0.2 released!</b> Now with (barely tested) XMODEM
+<b>2013-06-18: Version 0.2.1 released!</b> Fixed a very embarrassing bug in
+the compiler startup code which was putting the stack in the wrong place.
+
+2013-06-13: Version 0.2 released! Now with (barely tested) XMODEM
 receive, so you can send data from the PC to the Pi.
 
 2013-06-07: Version 0.1 released! The first actually useful version.
@@ -34,21 +37,21 @@ For certain values of useful, of course.
 Most likely what you want is the precompiled binary:
 
 <blockquote class='link'>
-<a href='../../../doc/stable/bin/piface-0.2.bin.gz'>
+<a href='../../../doc/stable/bin/piface-0.2.1.bin.gz'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../doc/stable/bin/piface-0.2.bin.gz'>piface-0.2.bin.gz</a>
-<p>Version 0.2 precompiled binary.</p>
+<a href='../../../doc/stable/bin/piface-0.2.1.bin.gz'>piface-0.2.1.bin.gz</a>
+<p>Version 0.2.1 precompiled binary.</p>
 </blockquote>
 
 The source code is available here:
 
 <blockquote class='link'>
-<a href='../../../tarball/piface-0.2.tar.gz?uuid=release-0.2'>
+<a href='../../../tarball/piface-0.2.1.tar.gz?uuid=release-0.2.1'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../tarball/piface-0.2.tar.gz?uuid=release-0.2'>piface-0.2.tar.gz</a>
-<p>Version 0.2 source code.</p>
+<a href='../../../tarball/piface-0.2.1.tar.gz?uuid=release-0.2.1'>piface-0.2.1.tar.gz</a>
+<p>Version 0.2.1 source code.</p>
 </blockquote>
 
 However,
@@ -87,7 +90,7 @@ Once set up, connect your serial terminal at 115200 baud 8N1, and when you
 start the Pi you should see:
 
 <pre>
-PiFace v0.1 (c) 2013 David Given
+PiFace v0.2.1 (c) 2013 David Given
 >
 </pre>
 
@@ -142,10 +145,11 @@ When the Raspberry Pi starts, there's 128kB of RAM at 80000000, which is
 where piface is loaded. piface then initialises the mini UART but does not
 attempt to change the PLLs or set up the SDRAM.
 
-The internal boot ROM is mapped at 60000000. There's 0xd4 bytes of RAM at
-60008000. There's about a kilobyte more RAM at 60008214, but there seems to
-be interrupt workspace immediately afterwards and you risk locking the device
-if you play with it too much.
+The internal boot ROM is mapped at 60000000. There's 0x800 bytes of RAM at
+60008000, which is useful for playing with. However, be wary of the area at
+about 60008000 to 60008048, as this is where the second core's stack lives.
+While the second core <i>should</i> be idling and unresponsive, I can't
+guarantee it...
 
 Peripherals are mapped at 7e000000. You can manipulate them with <tt>poke</tt> if
 you're really careful. Note that <tt>dump</tt> always reads bytes.
@@ -158,7 +162,7 @@ has is to make it easier to poke the Videocore to find out how it works. If
 this is the sort of thing that interests you, then piface is for you. If not,
 stay well clear (and use the ARM instead).
 
-In addition, Calculon is very new and is probably riddled with bugs. Find
+In addition, piface is very new and is probably riddled with bugs. Find
 any? Let me know by <a href="../../../tktnew">filing a bug</a> (it'll ask you
 to log in; you can either create an account or log in as anonymous).
 
