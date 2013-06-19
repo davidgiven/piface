@@ -99,4 +99,8 @@ extern const struct vfs vfs_mem;
 
 extern void mmc_init(void);
 
+/* Utilities */
+
+extern void millisleep(uint32_t ms);
+
 #endif

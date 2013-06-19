@@ -14,7 +14,8 @@ SRCS = \
 	src/dump.c \
 	src/xmodem.c \
 	src/cli.c \
-	src/misc.c
+	src/misc.c \
+	src/utils.c
 
 CFLAGS = -DVERSION=\"$(VERSION)\"
 

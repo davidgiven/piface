@@ -50,20 +50,6 @@ static int poll_stdin(void)
 	return select(1, &rds, &wrs, &exs, &t);
 }
 
-static void isleep(int s)
-{
-	struct timeval t;
-	fd_set rds, wrs, exs;
-
-	t.tv_sec = s;
-	t.tv_usec = 0;
-	FD_ZERO(&rds);
-	FD_ZERO(&wrs);
-	FD_ZERO(&exs);
-
-	select(0, &rds, &wrs, &exs, &t);
-}
-
 static void xmodem_send(struct file* fp, int len)
 {
 	uint8_t block;
@@ -153,7 +139,7 @@ eof:
 	free(buffer);
 	fflush(stdout);
 	newlines_on();
-	isleep(1);
+	millisleep(1000);
 	printf("File transmission complete.\n");
 }
 
@@ -277,7 +263,7 @@ eot:
 	free(buffer);
 
 	newlines_on();
-	isleep(1);
+	millisleep(1000);
 	printf("File reception complete.\n");
 }
 
