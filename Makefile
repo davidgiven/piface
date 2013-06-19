@@ -1,4 +1,4 @@
-VERSION = 0.2
+VERSION = 0.3
 
 OBJDIR = .obj
 hide = @
@@ -15,11 +15,16 @@ SRCS = \
 	src/xmodem.c \
 	src/cli.c \
 	src/misc.c \
-	src/utils.c
+	src/utils.c \
+	src/fatfs/ff.c \
+	src/fatfs/option/syscall.c \
+	src/fatfs/option/unicode.c
 
-CFLAGS = -DVERSION=\"$(VERSION)\"
+CFLAGS = \
+	-DVERSION=\"$(VERSION)\" \
+	-Isrc/fatfs
 
-all: piface.bin piface
+all: piface.bin
 
 clean::
 	@echo CLEAN

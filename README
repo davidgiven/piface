@@ -71,3 +71,12 @@ LICENSING
 piface is licensed under the Simplified BSD license. See COPYING for the
 full text.
 
+piface contains a copy of the FatFs filesystem access library. This is
+redistributable under the following license:
+
+/ * The FatFs module is a free software and there is NO WARRANTY.
+/ * No restriction on use. You can use, modify and redistribute it for
+/   personal, non-profit or commercial products UNDER YOUR RESPONSIBILITY.
+/ * Redistributions of source code must retain the above copyright notice.
+
+See http://elm-chan.org/fsw/ff/00index_e.html for more information.
