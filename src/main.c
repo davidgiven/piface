@@ -21,13 +21,13 @@ int main(int argc, const char* argv[])
 	environ = NULL;
 	printf("\n\nPiFace v%s (c) 2013 David Given\n", VERSION);
 
-	#if defined TARGET_PI
-		mmc_init();
-	#endif
-
 	for (;;)
 	{
 		char* buffer;
+
+		#if defined TARGET_PI
+			vfs_sd_deinit();
+		#endif
 
 		printf("> ");
 		buffer = readline();

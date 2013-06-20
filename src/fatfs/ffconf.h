@@ -60,7 +60,7 @@
 / Locale and Namespace Configurations
 /----------------------------------------------------------------------------*/
 
-#define _CODE_PAGE	1252
+#define _CODE_PAGE	1
 /* The _CODE_PAGE specifies the OEM code page to be used on the target system.
 /  Incorrect setting of the code page can cause a file open failure.
 /
@@ -93,7 +93,7 @@
 */
 
 
-#define	_USE_LFN	3		/* 0 to 3 */
+#define	_USE_LFN	0		/* 0 to 3 */
 #define	_MAX_LFN	255		/* Maximum LFN length to handle (12 to 255) */
 /* The _USE_LFN option switches the LFN support.
 /
@@ -108,7 +108,7 @@
 /  ff_memalloc() and ff_memfree() must be added to the project. */
 
 
-#define	_LFN_UNICODE	1	/* 0:ANSI/OEM or 1:Unicode */
+#define	_LFN_UNICODE	0	/* 0:ANSI/OEM or 1:Unicode */
 /* To switch the character code set on FatFs API to Unicode,
 /  enable LFN feature and set _LFN_UNICODE to 1. */
 
@@ -155,7 +155,7 @@
 / System Configurations
 /----------------------------------------------------------------------------*/
 
-#define _WORD_ACCESS	1	/* 0 or 1 */
+#define _WORD_ACCESS	0	/* 0 or 1 */
 /* Set 0 first and it is always compatible with all platforms. The _WORD_ACCESS
 /  option defines which access method is used to the word data on the FAT volume.
 /

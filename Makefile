@@ -11,6 +11,7 @@ SRCS = \
 	src/vfs.c \
 	src/vfs_mem.c \
 	src/vfs_host.c \
+	src/vfs_sd.c \
 	src/dump.c \
 	src/xmodem.c \
 	src/cli.c \

@@ -11,7 +11,10 @@ static const struct vfs* vfs[] =
 {
 	&vfs_mem,
 #if defined TARGET_TESTBED
-	&vfs_host
+	&vfs_host,
+#endif
+#if defined TARGET_PI
+	&vfs_sd,
 #endif
 };
 #define NUM_VFS sizeof(vfs)/sizeof(*vfs)

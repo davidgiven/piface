@@ -85,11 +85,13 @@ static struct gpio_interface* gpio;
 
 static int sdhc;
 static int highcap;
+static uint32_t partition_offset;
+
+static void read_block(uint32_t sector, uint32_t* buffer);
 
 static void wait_for_mmc(void)
 {
-	fflush(stdout);
-	while (altmmc->cmd & (MMC_ENABLE|MMC_BUSY))
+	while (altmmc->cmd & MMC_ENABLE)
 		;
 }
 
@@ -99,7 +101,7 @@ static uint32_t mmc_rpc(uint32_t cmd, uint32_t arg)
 
 	wait_for_mmc();
 
-	e = altmmc->status;
+	e = altmmc->status & 0xe8;
 	if (e)
 		altmmc->status &= e;
 
@@ -116,17 +118,17 @@ void mmc_init(void)
 	altmmc = pi_phys_to_user((void*) 0x7e202000);
 	gpio = pi_phys_to_user((void*) 0x7e200000);
 
-	printf("Set up GPIO pins...\n");
 	gpio->fsel4 = 0x24000000;
 	gpio->fsel5 = 0x924;
     gpio->pud = 2;
 
-	printf("Init ALTMMC...\n");
 	altmmc->clkdiv = 0x96;
 	altmmc->host_cfg = 0xa;
     altmmc->vdd = 0x1;
 
-	printf("Reset card...\n");
+	printf("[mounting SD card: ");
+	fflush(stdout);
+
 	altmmc->cmd = 0;
 	mmc_rpc(0, 0); /* GO_IDLE_STATE */
 
@@ -137,14 +139,16 @@ void mmc_init(void)
 	wait_for_mmc();
 	if (!i && ((altmmc->rsp0 & 0xff) == 0x55))
 	{
-		printf("Found SDHC v2 card\n");
+		printf("SDHCv2: ");
+		fflush(stdout);
 		sdhc = 2;
 	}
 	else
 	{
-		printf("Found SD v1 card\n");
+		printf("SDv1: ");
 		sdhc = 1;
 	}
+	fflush(stdout);
 
 	/* Enable high capacity mode (if available). */
 
@@ -161,7 +165,8 @@ void mmc_init(void)
 
 	highcap = !!(altmmc->rsp0 & (1<<30));
 	if (highcap)
-		printf("High capacity mode\n");
+		printf("high capacity: ");
+	fflush(stdout);
 
 	/* Get the card's RCA, and select it */
 
@@ -170,46 +175,108 @@ void mmc_init(void)
 
 		mmc_rpc(MMC_LONG_RSP | 2, 0); /* ALL_SEND_CID */
         wait_for_mmc();
-        printf("all_send_cid: %08x %08x %08x %08x\n",
-            altmmc->rsp0, altmmc->rsp1,
-            altmmc->rsp2, altmmc->rsp3);
 
         mmc_rpc(3, 0); /* SEND_RELATIVE_RCA */
         wait_for_mmc();
         rca = altmmc->rsp0 & 0xffff0000;
-        printf("RCA is 0x%04x\n", rca>>16);
 
 		mmc_rpc(7, rca); /* SELECT_CARD */
 		wait_for_mmc();
-
-        printf("%08x %08x %08x %08x\n",
-            altmmc->rsp0, altmmc->rsp1,
-            altmmc->rsp2, altmmc->rsp3);
 	}
 
 	/* Select 512 byte blocks. */
 
     mmc_rpc(16, 512); /* SET_BLOCKLEN */
 
+	altmmc->clkdiv = 0;
+
+	{
+		int partition;
+
+		uint8_t* buffer = malloc(512);
+		partition_offset = 0;
+		read_block(0, (uint32_t*) buffer);
+
+		partition = -1;
+		for (i=0; i<4; i++)
+		{
+			uint8_t* p = &buffer[0x1be + i*16];
+			switch (p[4])
+			{
+                case 0x01: /* FAT12 */
+                case 0x04: /* FAT16, <32MB */
+                case 0x06: /* FAT16, >32MB */
+                case 0x0b: /* FAT32 */
+                case 0x0c: /* FAT32X */
+                case 0x0e: /* FAT16X */
+                    partition = i;
+                    partition_offset = p[8] | (p[9]<<8) | (p[10]<<16) | (p[11]<<24);
+			}
+
+			if (partition != -1)
+				break;
+		}
+
+		printf("partition %d @ 0x%08x]\n", partition, partition_offset);
+		fflush(stdout);
+
+		free(buffer);
+	}
 }
 
-void mmc_read_block(uint32_t sector, uint32_t* buffer)
+void mmc_deinit(void)
+{
+}
+
+static void read_block(uint32_t sector, uint32_t* buffer)
 {
 	int i;
+	int count;
+	int crcfailed;
+
+	sector += partition_offset;
+	#if 0
+		printf("read sector %d\n", sector);
+		fflush(stdout);
+	#endif
 
 	if (!highcap)
 		sector <<= 9;
 
-    mmc_rpc(MMC_READ | 17, sector);
-    wait_for_mmc();
+	for (;;)
+	{
+		crcfailed = 0;
 
-    for (i=0; i<128; i++)
-    {
-	    while (!(altmmc->status & MMC_FIFO_STATUS))
-	        ;
+	    i = mmc_rpc(MMC_READ | MMC_BUSY | 18, sector); /* READ_MULTIPLE_BLOCK */
+	    wait_for_mmc();
 
-		buffer[i] = altmmc->data;
-    }
+	    for (i=0; i<128; i++)
+	    {
+			while (!(altmmc->status & MMC_FIFO_STATUS))
+				;
+
+			if (altmmc->status != MMC_FIFO_STATUS)
+			{
+				crcfailed = 1;
+				#if 0
+					printf("[block retry]\n");
+					fflush(stdout);
+				#endif
+				break;
+			}
+
+			buffer[i] = altmmc->data;
+			#if 0
+				if (i > 120)
+					printf("%d %08x %08x\n", i, buffer[i], altmmc->status);
+			#endif
+	    }
+
+		mmc_rpc(12, 0); /* STOP_TRANSMISSION */
+
+	    if (!crcfailed)
+	        break;
+	}
 }
 
 /* FatFS's interface. */
@@ -218,14 +285,14 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber (0..) */
 )
 {
-	return STA_NOINIT;
+	return 0;
 }
 
 DSTATUS disk_status (
 	BYTE pdrv		/* Physical drive nmuber (0..) */
 )
 {
-	return STA_NOINIT;
+	return 0;
 }
 
 DRESULT disk_read (
@@ -235,7 +302,13 @@ DRESULT disk_read (
 	BYTE count		/* Number of sectors to read (1..128) */
 )
 {
-	return RES_PARERR;
+	while (count--)
+	{
+		read_block(sector, (uint32_t*) buff);
+		sector++;
+		buff += 512;
+	}
+	return 0;
 }
 
 #if _USE_WRITE

@@ -94,10 +94,14 @@ extern void vfs_info(struct file* fp,
 
 extern const struct vfs vfs_host;
 extern const struct vfs vfs_mem;
+extern const struct vfs vfs_sd;
+
+extern void vfs_sd_deinit(void);
 
 /* MMC interface */
 
 extern void mmc_init(void);
+extern void mmc_deinit(void);
 
 /* Utilities */
 
