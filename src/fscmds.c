@@ -16,6 +16,7 @@ static void cp_cb(int argc, const char* argv[])
 	char* buffer = NULL;
 	uint32_t len;
 	uint32_t offset;
+	uint32_t prevoffset;
 
 	if (argc != 3)
 	{
@@ -35,6 +36,7 @@ static void cp_cb(int argc, const char* argv[])
 	vfs_info(srcfile, NULL, &len);
 	offset = 0;
 
+	prevoffset = 0;
 	for (;;)
 	{
 		uint32_t w;
@@ -53,7 +55,15 @@ static void cp_cb(int argc, const char* argv[])
 			w += i;
 			offset += i;
 		}
+
+		if ((offset - prevoffset) >= (16*1024))
+		{
+			printf("%d kB\r", offset/1024);
+			fflush(stdout);
+			prevoffset = offset;
+		}
 	}
+	printf("\n");
 
 exit:
 	if (buffer)
