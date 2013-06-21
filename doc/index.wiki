@@ -23,7 +23,9 @@ get in touch...
 
 <h3>What's new?</h3>
 
-<b>2013-06-18: Version 0.2.1 released!</b> Fixed a very embarrassing bug in
+2013-06-21: Version 0.3 released! Added basic read-write SD card support.
+
+2013-06-18: Version 0.2.1 released! Fixed a very embarrassing bug in
 the compiler startup code which was putting the stack in the wrong place.
 
 2013-06-13: Version 0.2 released! Now with (barely tested) XMODEM
@@ -37,21 +39,21 @@ For certain values of useful, of course.
 Most likely what you want is the precompiled binary:
 
 <blockquote class='link'>
-<a href='../../../doc/stable/bin/piface-0.2.1.bin.gz'>
+<a href='../../../doc/stable/bin/piface-0.3.bin.gz'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../doc/stable/bin/piface-0.2.1.bin.gz'>piface-0.2.1.bin.gz</a>
-<p>Version 0.2.1 precompiled binary.</p>
+<a href='../../../doc/stable/bin/piface-0.3.bin.gz'>piface-0.3.bin.gz</a>
+<p>Version 0.3 precompiled binary.</p>
 </blockquote>
 
 The source code is available here:
 
 <blockquote class='link'>
-<a href='../../../tarball/piface-0.2.1.tar.gz?uuid=release-0.2.1'>
+<a href='../../../tarball/piface-0.3.tar.gz?uuid=release-0.3'>
   <img class='link-img' height='22' width='20' alt='[BIN]' src='//cowlark.com/binary.png'>
 </a>
-<a href='../../../tarball/piface-0.2.1.tar.gz?uuid=release-0.2.1'>piface-0.2.1.tar.gz</a>
-<p>Version 0.2.1 source code.</p>
+<a href='../../../tarball/piface-0.3.tar.gz?uuid=release-0.3'>piface-0.3.tar.gz</a>
+<p>Version 0.3 source code.</p>
 </blockquote>
 
 However,
@@ -90,7 +92,7 @@ Once set up, connect your serial terminal at 115200 baud 8N1, and when you
 start the Pi you should see:
 
 <pre>
-PiFace v0.2.1 (c) 2013 David Given
+PiFace v0.3 (c) 2013 David Given
 >
 </pre>
 
@@ -100,15 +102,27 @@ You can now type commands. Here are some useful ones:
   *  To change memory: <code>poke byte 8000000 1 2 3 4</code>
   *  To download some data via XMODEM: <code>send mem:80000000+10000</code>
   *  To upload some data via XMODEM: <code>recv mem:60008000</code>
+  *  To copy data to a file: <code>cp mem:80000000+10000 sd:data.img</code>
+  *  To copy data from a file: <code>cp sd:data.img mem:60008000</code>
   *  To start execution at a particular address: <code>go 0</code>
   *  To get generic help: <code>help</code>
 
-piface uses an internal VFS; right now the only one supported is <code>mem:</code>.
-It uses filename of the form <code>mem:address+length</code>. You may also
+piface uses an internal VFS; <code>mem:</code> and <code>sd:</code> are
+supported.
+
+<code>mem:</code> files refer to an arbitrary
+block of memory, using a filename of the form <code>mem:address+length</code>.
+You may also
 use <code>mem:address</code> for unbounded memory regions, but be careful of
 this (because they're 4GB long and will take a while to dump to the console).
 
-Eventually there'll be support for the FAT filesystem on the SD card.
+<code>sd:</code> files refer to files on a FAT filesystem on the SD card.
+(The <code>ls</code> command is useful here.) Most FAT filesystems on LBA
+partitions should work. Cards are hot-swappable while piface is showing the
+command line prompt; both SDHC and ordinary SD cards are supported (but
+probably not MMC cards). The filesystem is writeable --- it hasn't corrupted
+my cards yet, but <i>you have been warned</i>. Performance is currently pretty
+lousy and it hasn't had much testing.
 
 If you try to do something to an unmapped memory region, or if you corrupt
 piface's workspace, piface will let you know by crashing. Power cycle the Pi
