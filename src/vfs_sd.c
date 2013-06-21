@@ -139,7 +139,23 @@ static uint32_t read_cb(void* backend,
 static uint32_t write_cb(void* backend,
 		uint32_t offset, void* buffer, uint32_t length)
 {
-	return 0;
+	FIL* fp = backend;
+	UINT br;
+	FRESULT r = f_lseek(fp, offset);
+	if (r != FR_OK)
+	{
+		setError("file system error %d: %s", r, error_strings[r]);
+		return 0;
+	}
+
+	r = f_write(fp, buffer, length, &br);
+    if (r != FR_OK)
+    {
+		setError("file system error %d: %s", r, error_strings[r]);
+        return 0;
+    }
+
+	return br;
 }
 
 static void info_cb(void* backend,

@@ -45,13 +45,11 @@ static void cp_cb(int argc, const char* argv[])
 			r = BUFFER_SIZE;
 
 		r = vfs_read(srcfile, offset, buffer, r);
-		printf("read %d from 0x%08x\n", r, offset);
 
 		w = 0;
 		while (w < r)
 		{
 			uint32_t i = vfs_write(destfile, offset, buffer+w, r-w);
-			printf("written %d to 0x%08x\n", i, offset);
 			w += i;
 			offset += i;
 		}

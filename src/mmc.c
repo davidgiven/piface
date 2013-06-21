@@ -88,6 +88,7 @@ static int highcap;
 static uint32_t partition_offset;
 
 static void read_block(uint32_t sector, uint32_t* buffer);
+static void write_block(uint32_t sector, uint32_t* buffer);
 
 static void wait_for_mmc(void)
 {
@@ -224,11 +225,58 @@ void mmc_init(void)
 	}
 }
 
-void mmc_deinit(void)
-{
-}
+ static void read_block(uint32_t sector, uint32_t* buffer)
+ {
+ 	int i;
+ 	int count;
+ 	int crcfailed;
 
-static void read_block(uint32_t sector, uint32_t* buffer)
+ 	sector += partition_offset;
+ 	#if 0
+ 		printf("read sector %d\n", sector);
+ 		fflush(stdout);
+ 	#endif
+
+ 	if (!highcap)
+ 		sector <<= 9;
+
+ 	for (;;)
+ 	{
+ 		crcfailed = 0;
+
+ 	    i = mmc_rpc(MMC_READ | MMC_BUSY | 18, sector); /* READ_MULTIPLE_BLOCK */
+ 	    wait_for_mmc();
+
+ 	    for (i=0; i<128; i++)
+ 	    {
+ 			while (!(altmmc->status & MMC_FIFO_STATUS))
+ 				;
+
+ 			if (altmmc->status != MMC_FIFO_STATUS)
+ 			{
+ 				crcfailed = 1;
+ 				#if 0
+ 					printf("[block retry]\n");
+ 					fflush(stdout);
+ 				#endif
+ 				break;
+ 			}
+
+ 			buffer[i] = altmmc->data;
+ 			#if 0
+ 				if (i > 120)
+ 					printf("%d %08x %08x\n", i, buffer[i], altmmc->status);
+ 			#endif
+ 	    }
+
+ 		mmc_rpc(12, 0); /* STOP_TRANSMISSION */
+
+ 	    if (!crcfailed)
+ 	        break;
+ 	}
+ }
+
+static void write_block(uint32_t sector, uint32_t* buffer)
 {
 	int i;
 	int count;
@@ -236,7 +284,7 @@ static void read_block(uint32_t sector, uint32_t* buffer)
 
 	sector += partition_offset;
 	#if 0
-		printf("read sector %d\n", sector);
+		printf("write sector %d\n", sector);
 		fflush(stdout);
 	#endif
 
@@ -247,11 +295,13 @@ static void read_block(uint32_t sector, uint32_t* buffer)
 	{
 		crcfailed = 0;
 
-	    i = mmc_rpc(MMC_READ | MMC_BUSY | 18, sector); /* READ_MULTIPLE_BLOCK */
+	    i = mmc_rpc(MMC_WRITE | MMC_BUSY | 25, sector); /* WRITE_MULTIPLE_BLOCK */
 	    wait_for_mmc();
 
 	    for (i=0; i<128; i++)
 	    {
+			altmmc->data = buffer[i];
+
 			while (!(altmmc->status & MMC_FIFO_STATUS))
 				;
 
@@ -264,12 +314,6 @@ static void read_block(uint32_t sector, uint32_t* buffer)
 				#endif
 				break;
 			}
-
-			buffer[i] = altmmc->data;
-			#if 0
-				if (i > 120)
-					printf("%d %08x %08x\n", i, buffer[i], altmmc->status);
-			#endif
 	    }
 
 		mmc_rpc(12, 0); /* STOP_TRANSMISSION */
@@ -277,6 +321,10 @@ static void read_block(uint32_t sector, uint32_t* buffer)
 	    if (!crcfailed)
 	        break;
 	}
+}
+
+void mmc_deinit(void)
+{
 }
 
 /* FatFS's interface. */
@@ -319,7 +367,13 @@ DRESULT disk_write (
 	BYTE count			/* Number of sectors to write (1..128) */
 )
 {
-	return RES_PARERR;
+	while (count--)
+	{
+		write_block(sector, (uint32_t*) buff);
+		sector++;
+		buff += 512;
+	}
+	return 0;
 }
 #endif
 
@@ -330,6 +384,27 @@ DRESULT disk_ioctl (
 	void *buff		/* Buffer to send/receive control data */
 )
 {
+	switch (cmd)
+	{
+		case CTRL_SYNC:
+			return 0;
+
+		case GET_SECTOR_SIZE:
+			*(WORD*)buff = 512;
+			return 0;
+
+		case GET_SECTOR_COUNT:
+			*(WORD*)buff = 0;
+			return 0;
+
+		case GET_BLOCK_SIZE:
+			*(WORD*)buff = 1;
+			return 0;
+
+        case CTRL_ERASE_SECTOR:
+        	return 0;
+    }
+
 	return RES_PARERR;
 }
 #endif
