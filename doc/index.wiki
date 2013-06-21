@@ -14,6 +14,7 @@ Right now piface's feature set is fairly thin as the capabilities of the
 Videocore side of the Pi are still being investigated, but it supports:
 
   *  uploads and downloads via XMODEM
+  *  read/write support for SD cards
   *  executing code
   *  modifying and dumping memory
   *  lots of plumbing for more interesting stuff later
@@ -23,7 +24,7 @@ get in touch...
 
 <h3>What's new?</h3>
 
-2013-06-21: Version 0.3 released! Added basic read-write SD card support.
+<b>2013-06-21</b>: Version 0.3 released! Added basic read-write SD card support.
 
 2013-06-18: Version 0.2.1 released! Fixed a very embarrassing bug in
 the compiler startup code which was putting the stack in the wrong place.
@@ -56,7 +57,6 @@ The source code is available here:
 <p>Version 0.3 source code.</p>
 </blockquote>
 
-However,
 In addition, you can download
 an <a href="../../../tarball/piface-tip.tar.gz?uuid=tip">the latest version
 from the VCS</a>. This is not guaranteed to work, or even to build. I'd
@@ -104,6 +104,7 @@ You can now type commands. Here are some useful ones:
   *  To upload some data via XMODEM: <code>recv mem:60008000</code>
   *  To copy data to a file: <code>cp mem:80000000+10000 sd:data.img</code>
   *  To copy data from a file: <code>cp sd:data.img mem:60008000</code>
+  *  To look at the contents of the SD card: <code>ls sd:</code>
   *  To start execution at a particular address: <code>go 0</code>
   *  To get generic help: <code>help</code>
 
