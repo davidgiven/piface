@@ -102,14 +102,14 @@ static uint32_t mmc_rpc(uint32_t cmd, uint32_t arg)
 
 	wait_for_mmc();
 
-	e = altmmc->status & 0xe8;
+	e = altmmc->status;
 	if (e)
 		altmmc->status &= e;
 
 	altmmc->arg = arg;
 	altmmc->cmd = MMC_ENABLE | cmd;
 
-	return altmmc->status & 0xe8;
+	return altmmc->status;
 }
 
 void mmc_init(void)
@@ -156,7 +156,7 @@ void mmc_init(void)
 	for (;;)
 	{
 		mmc_rpc(55, 0); /* APP_CMD */
-		i = mmc_rpc(41, (sdhc==2) ? 0x40100000 : 0); /* SD_SEND_OP_CMD */
+		i = mmc_rpc(41, (sdhc==2) ? 0x40100000 : 0x00100000); /* SD_SEND_OP_CMD */
 		wait_for_mmc();
 
 		if ((i == 0) && (altmmc->rsp0 & (1<<31)))
@@ -198,27 +198,33 @@ void mmc_init(void)
 		partition_offset = 0;
 		read_block(0, (uint32_t*) buffer);
 
-		partition = -1;
-		for (i=0; i<4; i++)
+		if ((buffer[510] == 0x55) && (buffer[511] == 0xaa))
 		{
-			uint8_t* p = &buffer[0x1be + i*16];
-			switch (p[4])
+			partition = -1;
+			for (i=0; i<4; i++)
 			{
-                case 0x01: /* FAT12 */
-                case 0x04: /* FAT16, <32MB */
-                case 0x06: /* FAT16, >32MB */
-                case 0x0b: /* FAT32 */
-                case 0x0c: /* FAT32X */
-                case 0x0e: /* FAT16X */
-                    partition = i;
-                    partition_offset = p[8] | (p[9]<<8) | (p[10]<<16) | (p[11]<<24);
+				uint8_t* p = &buffer[0x1be + i*16];
+				switch (p[4])
+				{
+	                case 0x01: /* FAT12 */
+	                case 0x04: /* FAT16, <32MB */
+	                case 0x06: /* FAT16, >32MB */
+	                case 0x0b: /* FAT32 */
+	                case 0x0c: /* FAT32X */
+	                case 0x0e: /* FAT16X */
+	                    partition = i;
+	                    partition_offset = p[8] | (p[9]<<8) | (p[10]<<16) | (p[11]<<24);
+				}
+
+				if (partition != -1)
+					break;
 			}
 
-			if (partition != -1)
-				break;
+			printf("partition %d @ 0x%08x]\n", partition, partition_offset);
 		}
+		else
+			printf("whole partition mode]\n");
 
-		printf("partition %d @ 0x%08x]\n", partition, partition_offset);
 		fflush(stdout);
 
 		free(buffer);
@@ -272,7 +278,10 @@ void mmc_init(void)
  		mmc_rpc(12, 0); /* STOP_TRANSMISSION */
 
  	    if (!crcfailed)
+ 	    {
+			millisleep(10);
  	        break;
+ 	    }
  	}
  }
 
@@ -319,8 +328,12 @@ static void write_block(uint32_t sector, uint32_t* buffer)
 		mmc_rpc(12, 0); /* STOP_TRANSMISSION */
 
 	    if (!crcfailed)
+	    {
+			millisleep(10);
 	        break;
+	    }
 	}
+	fflush(stdout);
 }
 
 void mmc_deinit(void)
