@@ -17,6 +17,7 @@ SRCS = \
 	src/cli.c \
 	src/misc.c \
 	src/utils.c \
+	src/fscmds.c \
 	src/fatfs/ff.c \
 	src/fatfs/option/syscall.c \
 	src/fatfs/option/unicode.c

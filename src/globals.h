@@ -49,6 +49,7 @@ extern const struct command recv_cmd;
 extern const struct command dump_cmd;
 extern const struct command go_cmd;
 extern const struct command poke_cmd;
+extern const struct command cp_cmd;
 
 /* Command line parser (do not use reentrantly) */
 
