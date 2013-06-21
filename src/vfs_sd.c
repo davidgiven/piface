@@ -19,6 +19,7 @@ static uint32_t write_cb(void* backend,
 		uint32_t offset, void* buffer, uint32_t length);
 static void info_cb(void* backend,
 		uint32_t* base, uint32_t* length);
+static void enumerate_cb(const char* path, vfs_enumerate_f* cb);
 
 const struct filecbs filecbs_sd =
 {
@@ -33,7 +34,8 @@ const struct vfs vfs_sd =
 	"sd",
 	&filecbs_sd,
 
-	open_cb
+	open_cb,
+	enumerate_cb
 };
 
 static const char* error_strings[] =
@@ -165,5 +167,34 @@ static void info_cb(void* backend,
 
 	*base = 0;
 	*length = f_size(fp);
+}
+
+static void enumerate_cb(const char* path, vfs_enumerate_f* cb)
+{
+	FRESULT r;
+	DIR dir;
+	FILINFO fno;
+
+	init();
+	r = f_opendir(&dir, path);
+	if (r != FR_OK)
+		goto error;
+
+	for (;;)
+	{
+		memset(&fno, 0, sizeof(fno));
+		r = f_readdir(&dir, &fno);
+		if (r != FR_OK)
+			goto error;
+
+		if (!fno.fname[0])
+			break;
+
+		cb(fno.fname, !!(fno.fattrib & AM_DIR), fno.fsize);
+	}
+
+	return;
+error:
+	setError("file system error %d: %s", r, error_strings[r]);
 }
 

@@ -53,6 +53,7 @@ static const struct command* commands[] =
 	&go_cmd,
 	&poke_cmd,
 	&cp_cmd,
+	&ls_cmd,
 };
 #define NUM_COMMANDS sizeof(commands)/sizeof(*commands)
 

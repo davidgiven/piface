@@ -33,28 +33,40 @@ static const struct vfs* find_vfs(const char* name, int namelen)
 	return NULL;
 }
 
-struct file* vfs_open(const char* path, int flags)
+static int parse_vfs_path(const char* path, const struct vfs** fs,
+	const char** sub)
 {
 	const char* e = strchr(path, ':');
-	const struct vfs* fs;
-	void* backend;
 	int len;
 
 	if (!e)
 	{
 		setError("malformed path (no VFS specifier)");
-		return NULL;
+		return 0;
 	}
 
 	len = e-path;
-	fs = find_vfs(path, len);
+	*fs = find_vfs(path, len);
 	if (!fs)
 	{
 		setError("unknown file system '%.*s'", len, path);
-		return NULL;
+		return 0;
 	}
 
-	backend = fs->open(e+1, flags);
+	*sub = e+1;
+	return 1;
+}
+
+struct file* vfs_open(const char* path, int flags)
+{
+	const struct vfs* fs;
+	const char* subpath;
+	void* backend;
+
+	if (!parse_vfs_path(path, &fs, &subpath))
+		return NULL;
+
+	backend = fs->open(subpath, flags);
 	if (backend)
 	{
 		struct file* fp = malloc(sizeof(struct file));
@@ -90,3 +102,23 @@ void vfs_info(struct file* fp, uint32_t* base, uint32_t* length)
 		length = &dummy;
 	fp->cb->info(fp->backend, base, length);
 }
+
+void vfs_enumerate(const char* path, vfs_enumerate_f* cb)
+{
+	const struct vfs* fs;
+	const char* subpath;
+
+	if (!parse_vfs_path(path, &fs, &subpath))
+		return;
+
+	if (!fs->enumerate)
+	{
+		setError("filesystem does not support enumeration");
+		return;
+	}
+
+	fs->enumerate(subpath, cb);
+	return;
+}
+
+

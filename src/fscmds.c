@@ -76,3 +76,36 @@ const struct command cp_cmd =
 
 	cp_cb
 };
+
+static void ls_enumerate_cb(const char* path, int isdir, uint32_t len)
+{
+	if (isdir)
+		printf("       [DIR] ");
+	else
+		printf("  %10d ", len);
+	printf("%s\n", path);
+}
+
+static void ls_cb(int argc, const char* argv[])
+{
+	if (argc != 2)
+	{
+		setError("syntax: ls <path>");
+		return;
+	}
+
+	vfs_enumerate(argv[1], ls_enumerate_cb);
+}
+
+const struct command ls_cmd =
+{
+	"ls",
+	"lists files available at a path",
+
+	"Syntax:\n"
+	"  ls <path>\n"
+	"Lists files available at a particular path (if the file system supports\n"
+	"it).",
+
+	ls_cb
+};

@@ -50,6 +50,7 @@ extern const struct command dump_cmd;
 extern const struct command go_cmd;
 extern const struct command poke_cmd;
 extern const struct command cp_cmd;
+extern const struct command ls_cmd;
 
 /* Command line parser (do not use reentrantly) */
 
@@ -61,11 +62,14 @@ extern void execute_command(char* cmd);
 
 /* VFS declarations */
 
+typedef void vfs_enumerate_f(const char* path, int isdir, uint32_t length);
+
 struct vfs
 {
 	const char* name;
 	const struct filecbs* callbacks;
 	void* (*open)(const char* path, int flags);
+	void (*enumerate)(const char* path, vfs_enumerate_f* callback);
 };
 
 struct filecbs
@@ -92,6 +96,7 @@ extern uint32_t vfs_write(struct file* fp,
 	uint32_t offset, void* buffer, uint32_t length);
 extern void vfs_info(struct file* fp,
 	uint32_t* base, uint32_t* length);
+extern void vfs_enumerate(const char* path, vfs_enumerate_f* callback);
 
 extern const struct vfs vfs_host;
 extern const struct vfs vfs_mem;

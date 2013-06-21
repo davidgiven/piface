@@ -35,7 +35,8 @@ const struct vfs vfs_mem =
 	"mem",
 	&filecbs_mem,
 
-	open_cb
+	open_cb,
+	NULL
 };
 
 static void malformed(void)

@@ -31,7 +31,8 @@ const struct vfs vfs_host =
 	"host",
 	&filecbs_host,
 
-	open_cb
+	open_cb,
+	NULL
 };
 
 static void* open_cb(const char* path, int flags)
