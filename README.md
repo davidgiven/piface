@@ -1,13 +1,13 @@
                                 PIFACE v0.3
                                 ===========
                                   
-                         Copyright (C) 2013 David Given
+                         Copyright © 2013 David Given
                                  2013-06-21
             
             
                                  
-INTRODUCTION
-============
+Introduction
+------------
 
 piface is a very simple but hopefully useful boot monitor for the Raspberry
 Pi. Unlike most other Raspberry Pi software, it runs directly on the
@@ -17,8 +17,8 @@ the ARM-Videocore APIs.
 
 
 
-INSTALLATION
-============
+Installation
+------------
 
 piface requires a modified version of The Amsterdam Compiler Kit with
 support for generating (crude) Videocore machine code. You can get the ACK
@@ -46,18 +46,16 @@ to something (at 115200 baud 8n1 no flow control).
 
 
 
-MORE INFORMATION
-================
+More information
+----------------
 
-piface's home is at http://cowlark.com/piface.
-
-Alternatively, you will find a copy of the website (in easier-to-read more-or-
-less plain text format) in the doc directory.
+piface's real home is at http://cowlark.com/piface. Go there for the actual
+documentation.
 
 
 
-THE AUTHOR
-==========
+The author
+----------
 
 piface was written by me, David Given. You may contact me at dg@cowlark.com,
 or visit my website at http://www.cowlark.com. There may or may not be
@@ -65,8 +63,8 @@ anything interesting there.
 
 
 
-LICENSING
-=========
+Licensing
+---------
 
 piface is licensed under the Simplified BSD license. See COPYING for the
 full text.
@@ -74,9 +72,10 @@ full text.
 piface contains a copy of the FatFs filesystem access library. This is
 redistributable under the following license:
 
-/ * The FatFs module is a free software and there is NO WARRANTY.
-/ * No restriction on use. You can use, modify and redistribute it for
-/   personal, non-profit or commercial products UNDER YOUR RESPONSIBILITY.
-/ * Redistributions of source code must retain the above copyright notice.
+   The FatFs module is a free software and there is NO WARRANTY.
+   No restriction on use. You can use, modify and redistribute it for
+   personal, non-profit or commercial products UNDER YOUR RESPONSIBILITY.
+   Redistributions of source code must retain the above copyright notice.
 
 See http://elm-chan.org/fsw/ff/00index_e.html for more information.
+
