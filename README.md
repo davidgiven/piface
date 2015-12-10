@@ -1,8 +1,9 @@
-                                PIFACE v0.3
-                                ===========
+PiFace v0.3
+===========
                                   
-                         Copyright © 2013 David Given
-                                 2013-06-21
+Copyright © 2013 David Given
+
+2013-06-21
             
             
                                  
