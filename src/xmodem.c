@@ -6,6 +6,9 @@
  */
 
 #include "globals.h"
+#ifdef __GNUC__
+#include <sys/time.h>
+#endif
 #include <termios.h>
 
 static int crc16;

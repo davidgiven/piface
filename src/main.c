@@ -9,7 +9,7 @@
 
 int main(int argc, const char* argv[])
 {
-	#if defined TARGET_PI
+	#if defined TARGET_PI && !defined(__GNUC__)
 		pi_init_uart();
 	#endif
 

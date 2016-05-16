@@ -21,7 +21,7 @@
 
 extern char** environ;
 
-#if defined TARGET_PI
+#if defined TARGET_PI && !defined(__GNUC__)
 	#include <pi.h>
 #else
 	#define pi_phys_to_user(x) x

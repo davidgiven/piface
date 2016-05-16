@@ -5,6 +5,9 @@
  * See the file 'Copying' in the root of the distribution for the full text.
  */
 
+#ifdef __GNUC__
+#include <sys/time.h>
+#endif
 #include "globals.h"
 
 void millisleep(uint32_t s)

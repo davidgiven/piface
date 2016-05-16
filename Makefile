@@ -39,7 +39,7 @@ $(eval depends += $(patsubst %.c,$(OBJDIR)/$(variant)/%.d,$(SRCS)))
 $(OBJDIR)/$(variant)/%.o: %.c
 	@echo CC $(variant) $$@
 	@mkdir -p $$(dir $$@)
-	$(hide) gcc $(CFLAGS) $(cflags) -MM -MQ $$@ -o $$(patsubst %.o,%.d,$$@) $$^
+	$(hide) $(cc) $(CFLAGS) $(cflags) -MM -MQ $$@ -o $$(patsubst %.o,%.d,$$@) $$^
 	$(hide) $(cc) $(CFLAGS) $(cflags) $$< -c -o $$@
 
 $(variant): $(objs)
@@ -56,6 +56,15 @@ cflags := -DTARGET_PI
 cc := ack -mrpi -O
 link := $(cc) -.c -t
 $(eval $(build-piface))
+
+variant := piface-gcc.elf
+cflags := -DTARGET_PI
+cc := vc4-elf-gcc -Os -save-temps
+link := $(cc) -T vc4-sram.ld
+$(eval $(build-piface))
+
+piface-gcc.bin: piface-gcc.elf
+	vc4-elf-objcopy -O binary piface-gcc.elf piface-gcc.bin
 
 variant := piface
 cflags := -DTARGET_TESTBED
